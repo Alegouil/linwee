@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabaseClient';
+import { hasSupabaseConfigurationError, supabase } from '../lib/supabaseClient';
 
 export function AuthPage() {
   const [email, setEmail] = useState('');
@@ -19,6 +19,10 @@ export function AuthPage() {
   }, [navigate]);
 
   const handleLogin = async () => {
+    if (hasSupabaseConfigurationError) {
+      setMessage('❌ Supabase n’est pas configuré sur cet environnement. Vérifiez les variables Vercel puis redéployez.');
+      return;
+    }
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       setMessage('❌ ' + (error.message || 'Erreur lors de la connexion'));
@@ -29,6 +33,10 @@ export function AuthPage() {
   };
 
   const handleForgot = async () => {
+    if (hasSupabaseConfigurationError) {
+      setMessage('❌ Supabase n’est pas configuré sur cet environnement. Vérifiez les variables Vercel puis redéployez.');
+      return;
+    }
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: window.location.origin,
     });
@@ -53,6 +61,11 @@ export function AuthPage() {
         </div>
 
         <div className="grid gap-4">
+          {hasSupabaseConfigurationError && (
+            <p className="rounded-3xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+              Cet environnement Vercel n’a pas reçu les variables Supabase au build. Ajoute `VITE_SUPABASE_URL` et `VITE_SUPABASE_ANON_KEY`, puis relance un déploiement.
+            </p>
+          )}
           {mode === 'login' && (
             <>
               <input

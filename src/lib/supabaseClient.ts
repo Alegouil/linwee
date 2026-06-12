@@ -3,8 +3,14 @@ import { readStoredUsers } from './userStore';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const isBrowser = typeof window !== 'undefined';
+const isLocalhost = isBrowser
+  ? ['localhost', '127.0.0.1'].includes(window.location.hostname)
+  : false;
 
-const isDev = supabaseUrl?.includes('placeholder') || !supabaseUrl || !supabaseAnonKey;
+const hasSupabaseEnv = Boolean(supabaseUrl && supabaseAnonKey && !supabaseUrl.includes('placeholder'));
+const isDev = !hasSupabaseEnv && isLocalhost;
+const isMisconfiguredProduction = !hasSupabaseEnv && !isLocalhost;
 
 export const supabase = isDev
   ? ({
@@ -55,6 +61,11 @@ export const supabase = isDev
         },
       },
     } as any)
-  : createClient(supabaseUrl, supabaseAnonKey);
+  : createClient(
+      supabaseUrl || 'https://invalid-project.supabase.co',
+      supabaseAnonKey || 'invalid-anon-key',
+    );
 
 export const isDevelopment = isDev;
+export const hasSupabaseConfiguration = hasSupabaseEnv;
+export const hasSupabaseConfigurationError = isMisconfiguredProduction;
