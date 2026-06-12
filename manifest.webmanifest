@@ -1,0 +1,10 @@
+{
+  "name": "Linwe Project Studio",
+  "short_name": "Linwe",
+  "start_url": "/home",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "lang": "fr",
+  "scope": "/"
+}

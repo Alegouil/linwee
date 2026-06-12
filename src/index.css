@@ -43,6 +43,20 @@ button, input, textarea, select {
   font: inherit;
 }
 
+input,
+textarea,
+select {
+  font-size: 16px;
+}
+
+@supports (-webkit-touch-callout: none) {
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+  }
+}
+
 ::selection {
   background: rgba(30, 136, 229, 0.18);
 }
